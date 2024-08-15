@@ -7,11 +7,12 @@ import {
   BrowserRouter
 } from "react-router-dom";
 import './styles.css'
+import { AppTheme } from './theme/AppTheme.jsx';
 
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
-    {/* <StrictMode> */}
+      {/* <StrictMode> */}
       <JournalApp />
-    {/* </StrictMode> */}
+      {/* </StrictMode> */}
   </BrowserRouter>
 )

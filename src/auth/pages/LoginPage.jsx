@@ -1,41 +1,45 @@
 import { Google } from "@mui/icons-material"
-import { Button, Grid, TextField, Typography } from "@mui/material"
+import { Alert, Button, Grid, TextField, Typography } from "@mui/material"
 import { Link as RouterLink } from "react-router-dom"
 import { AuthLayout } from "../layout/AuthLayout"
 import { useTheme } from "@emotion/react";
 import { useForm } from "../../components/useForm";
 import { useDispatch, useSelector } from "react-redux";
-import { checkingAuthentication, startGoogleSignIn } from "../../store/auth/thunks";
+import { checkingAuthentication, startGoogleSignIn, startLoginWithEmailPassword } from "../../store/auth/thunks";
 import { useMemo } from "react";
+import { loginWithEmailPassword } from "../../firebase/providers";
 
 export const LoginPage = () => {
 
-    const {status} = useSelector( state => state.auth)
+    const { status, errorMessage } = useSelector(state => state.auth)
 
     const dispatch = useDispatch();
 
-    const {email, onInputChange, password} = useForm({
+    const isCheckingAuthentication = useMemo(() => status === 'checking', [status])
+
+    const { email, onInputChange, password } = useForm({
         email: 'jahirsampe@gmail.com',
         password: 'danicaro'
     })
 
-    const isAuthenticating = useMemo( () => status === 'checking', [status]);
+    const isAuthenticating = useMemo(() => status === 'checking', [status]);
 
-    const onSubmit = ( event ) => {
+    const onSubmit = (event) => {
         event.preventDefault();
-        console.log(email, password)
         dispatch(checkingAuthentication());
     }
 
-    const onGoogleSignIn = () => {
+    const onSignIn = (email, password) => {
+        dispatch(startLoginWithEmailPassword(email, password));
+    }
 
-        console.log('onGoogleSignIn')
+    const onGoogleSignIn = () => {
         dispatch(startGoogleSignIn())
     }
 
     return (
         <AuthLayout title="Login">
-            <form onSubmit={onSubmit}>
+            <form onSubmit={onSubmit} className="animate__animated animate__fadeIn animate__faster">
                 <Grid container>
                     <Grid item xs={12} sx={{ marginTop: 2 }}>
                         <TextField
@@ -61,16 +65,23 @@ export const LoginPage = () => {
                         />
                     </Grid>
                     <Grid container spacing={2} sx={{ mb: 2, mt: 2 }}>
+                        <Grid
+                            item
+                            xs={12}
+                            display={!!errorMessage ? '' : 'none'}
+                        >
+                            <Alert severity="error">{errorMessage}</Alert>
+                        </Grid>
                         <Grid item xs={12} sm={6}>
-                            <Button disabled={isAuthenticating} type="submit" variant="contained" fullWidth>
+                            <Button disabled={isAuthenticating} type="submit" variant="contained" fullWidth onClick={() => onSignIn(email, password)}>
                                 Login
                             </Button>
                         </Grid>
                         <Grid item xs={12} sm={6}>
-                            <Button 
+                            <Button
                                 disabled={isAuthenticating}
                                 variant="contained"
-                                fullWidth 
+                                fullWidth
                                 onClick={onGoogleSignIn}
                             >
                                 <Google />

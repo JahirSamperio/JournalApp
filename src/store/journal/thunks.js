@@ -11,10 +11,11 @@ export const startNewNote = () => {
         const {uid} = getState().auth;
 
         const newNote = {
-            title: '',
-            body: '',
+            title: "",
+            body: "",
+            imageUrls: [],
             date: new Date().getTime()
-        }
+        };
 
         //configuaracion de base de datos
         const newDoc = doc(collection( FirebaseDB, `${uid}/journal/notes` ));
